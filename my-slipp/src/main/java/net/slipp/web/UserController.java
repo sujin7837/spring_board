@@ -23,6 +23,11 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@GetMapping("/loginForm")
+	public String loginFrom() {
+		return "/user/login";
+	}
+	
 	@GetMapping("/form")
 	public String form() {
 		return "/user/form";
