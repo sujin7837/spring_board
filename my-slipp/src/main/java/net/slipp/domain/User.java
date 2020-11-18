@@ -1,4 +1,4 @@
-package net.slipp.web;
+package net.slipp.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,6 +45,13 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
+	}
+
+	public void update(User newUser) {
+		// TODO Auto-generated method stub
+		this.password=newUser.password;
+		this.email=newUser.email;
+		this.name=newUser.name;
 	}
 
 	
