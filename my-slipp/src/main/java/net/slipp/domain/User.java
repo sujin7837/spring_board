@@ -32,6 +32,13 @@ public class User {
 	public Long getId() {
 		return id;
 	}
+	
+	public boolean matchId(Long newId) {
+		if(newId==null) {
+			return false;
+		}
+		return newId.equals(id);
+	}
 
 	public void setUserId(String userId) {
 		this.userId = userId;
@@ -41,9 +48,17 @@ public class User {
 		this.password = password;
 	}
 	
-	public String getPassword() {
-		return password;
+	public boolean matchPassword(String newPassword) {
+		if(newPassword==null) {
+			return false;
+		}
+		return newPassword.equals(password);	//입력한 패스워드가 기존에 지정한 패스워드와 같으면 로그인 성공 
 	}
+	
+//메시지를 통해 패스워드를 전달(matchPassword 이용)하면 해당 코드가 필요 없어짐 
+//	public String getPassword() {
+//		return password;
+//	}
 
 	public void setName(String name) {
 		this.name = name;
