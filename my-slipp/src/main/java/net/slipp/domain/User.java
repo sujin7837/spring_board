@@ -20,12 +20,18 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)	//import.sql 파일에서 ID 값을 지정해주지 않으면 오류가 발생하는데, ID값을 자동 생성하도록 해주는 코
 	private Long id;	//값이 자동으로 1씩 증가됨
 	
-	@Column(nullable=false, length=20)	//userId 값이 널 값이 될 수 없도록 지정 
+	@Column(nullable=false, length=20, unique=true)	
+	//userId 값이 널 값이 될 수 없도록 지정 
+	//unique=true : userId는 유일해야 한다(똑같은 값이 들어올 수 없다) 
 	private String userId;
 	
 	private String password;
 	private String name;
 	private String email;
+	
+	public Long getId() {
+		return id;
+	}
 
 	public void setUserId(String userId) {
 		this.userId = userId;

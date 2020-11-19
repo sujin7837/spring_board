@@ -1,1 +1,2 @@
-INSERT INTO USER (USER_ID, PASSWORD, NAME, EMAIL) VALUES ('javajigi', 'test', 'name', 'javajigi@slipp.net' );
+INSERT INTO USER (USER_ID, PASSWORD, NAME, EMAIL) VALUES ('javajigi', 'test', 'name1', 'javajigi@slipp.net' );
+INSERT INTO USER (USER_ID, PASSWORD, NAME, EMAIL) VALUES ('sanjigi', 'test', 'name2', 'sanjigi@slipp.net' );

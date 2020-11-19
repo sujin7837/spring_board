@@ -43,14 +43,14 @@ public class UserController {
 			return "redirect:/users/loginForm";
 		}
 		System.out.println("Login Success!");
-		session.setAttribute("user", user);	//세션에 현재 로그인한 사용자의 정보를 저장 
+		session.setAttribute("sessionedUser", user);	//세션에 현재 로그인한 사용자의 정보를 저장 
 		
 		return "redirect:/";	//로그인 성공시 메인 페이지로 이동하도록 해줌 
 	}
 	
 	@GetMapping("/logout")	//세션에 정보를 한번 저장해놓으면 여러 웹페이지로 이동하더라도 세션에 계속 저장된 상태로 유지가 됨 
 	public String logout(HttpSession session) {
-		session.removeAttribute("user");
+		session.removeAttribute("sessionedUser");
 		
 		return "redirect:/";	//로그아웃을 할 때는 세션에 담겨있는 정보를 삭제하면 됨 
 		
@@ -78,16 +78,40 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id}/form")
-	public String updateForm(@PathVariable Long id, Model model) {	//id를 받아와야 하므로 @PathVariable 사용
+	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {	
+		//id를 받아와야 하므로 @PathVariable 사용
+		//session을 통해서 사용자가 로그인을 했는지 여부를 알아옴 
+		Object tempUser=session.getAttribute("sessionedUser");
+		if(tempUser==null) {	//로그인을 하지 않으면 로그인 페이지로 이동하도록 함 
+			return "redirect:/users/loginForm";
+		}
+//자신의 정보만 수정할 수 있도록 하는 방법 1	
+		User sessionedUser=(User)tempUser;
+		if(!id.equals(sessionedUser.getId())) {	//자신의 아이디와 일치하지 않는 경우에는 정보를 수정할 수 없도록 함 
+			throw new IllegalStateException("자신의 정보만 수정할 수 있습니다.");
+		}
+		
+//자신의 정보만 수정할 수 있도록 하는 방법 2 
+//findById() 괄호 안에 sessionedUser.getId()를 추가함 		
 		User user=userRepository.findById(id).get();	//findOne(id) 오류-> findById(id).get()
 		model.addAttribute("user", user);
 		return "/user/updateForm";
 	}
 	
 	@PutMapping("/{id}")	//개인정보수정
-	public String update(@PathVariable Long id, User newUser) {
+	public String update(@PathVariable Long id, User updatedUser, HttpSession session) {
+		//실제 정보를 수정하는 부분에서도 예외 처리가 중요함 
+		Object tempUser=session.getAttribute("sessionedUser");
+		if(tempUser==null) {	
+			return "redirect:/users/loginForm";
+		}	
+		User sessionedUser=(User)tempUser;
+		if(!id.equals(sessionedUser.getId())) {	 
+			throw new IllegalStateException("자신의 정보만 수정할 수 있습니다.");
+		}
+		
 		User user=userRepository.findById(id).get();
-		user.update(newUser);
+		user.update(updatedUser);
 		userRepository.save(user);
 		return "redirect:/users";	//수정 후 사용자 목록으로 이동하여 잘 수정되었는지 확인
 	}
