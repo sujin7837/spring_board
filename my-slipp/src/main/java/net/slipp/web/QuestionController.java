@@ -33,7 +33,7 @@ public class QuestionController {
 			return "/users/longinForm";	
 		}
 		User sessionUser=HttpSessionUtils.getUserFromSession(session);	//6. 세션으로부터 user 정보를 얻어옴
-		Question newQuestion=new Question(sessionUser.getUserId(), title, contents);	//Question을 만듦
+		Question newQuestion=new Question(sessionUser, title, contents);	//Question을 만듦
 		questionRepository.save(newQuestion);
 		return "redirect:/";	//5. 제목과 내용이 정상적으로 전달되면 질문 목록(메인 페이지)으로 이동함 
 	}
