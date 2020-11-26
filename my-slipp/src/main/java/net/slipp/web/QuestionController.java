@@ -50,21 +50,51 @@ public class QuestionController {
 	}
 	
 	@GetMapping("/{id}/form")	// 상세 페이지를 수정할 때
-	public String updateForm(@PathVariable Long id, Model model) {
-		model.addAttribute("question", questionRepository.findById(id).get());
+	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
+		//수정에 대한 보안 설정을 해주기 위해 세션에서 정보를 가져옴
+		if(!HttpSessionUtils.isLoginUser(session)) {	
+			return "/users/longinForm";	
+		}
+		//로그인한 사용자가 글쓴이와 동일한지 확인하고, 같지 않으면 로그인 페이지로 이동
+		User loginUser=HttpSessionUtils.getUserFromSession(session);
+		Question question = questionRepository.findById(id).get();
+		if(!question.isSameWriter(loginUser)) {
+			return "/users/loginForm";
+		}
+		
+		model.addAttribute("question", question);
 		return "/qna/updateForm";
 	}
 	
 	@PutMapping("/{id}")
-	public String update(@PathVariable Long id, String title, String contents) {
-		Question question=questionRepository.findById(id).get();
+	public String update(@PathVariable Long id, String title, String contents, HttpSession session) {
+		if(!HttpSessionUtils.isLoginUser(session)) {	
+			return "/users/longinForm";	
+		}
+		
+		User loginUser=HttpSessionUtils.getUserFromSession(session);
+		Question question = questionRepository.findById(id).get();
+		if(!question.isSameWriter(loginUser)) {
+			return "/users/loginForm";
+		}
+				
 		question.update(title, contents);	//수정한 내용이 적용됨
 		questionRepository.save(question);	//수정한 내용을 저장함
 		return String.format("redirect:/questions/%d", id);
 	}
 	
 	@DeleteMapping("/{id}")
-	public String delete(@PathVariable Long id) {
+	public String delete(@PathVariable Long id, HttpSession session) {
+		if(!HttpSessionUtils.isLoginUser(session)) {	
+			return "/users/longinForm";	
+		}
+		
+		User loginUser=HttpSessionUtils.getUserFromSession(session);
+		Question question = questionRepository.findById(id).get();
+		if(!question.isSameWriter(loginUser)) {
+			return "/users/loginForm";
+		}
+		
 		questionRepository.deleteById(id);	//delete(): entity를 인자로 받아서 삭제함, deleteById(): id를 받아서 그 개체를 삭제함
 		return "redirect:/";
 	}

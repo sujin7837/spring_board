@@ -46,5 +46,10 @@ public class Question {
 		this.contents=contents;
 		
 	}
+
+	public boolean isSameWriter(User loginUser) {
+		// TODO Auto-generated method stub
+		return this.writer.equals(loginUser);
+	}
 	
 }
