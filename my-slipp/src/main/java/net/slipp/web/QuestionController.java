@@ -4,7 +4,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -36,5 +38,12 @@ public class QuestionController {
 		Question newQuestion=new Question(sessionUser, title, contents);	//Question을 만듦
 		questionRepository.save(newQuestion);
 		return "redirect:/";	//5. 제목과 내용이 정상적으로 전달되면 질문 목록(메인 페이지)으로 이동함 
+	}
+	
+	@GetMapping("/{id}")
+	public String show(@PathVariable Long id, Model model) {	//path에 있는 질문의 아이디를 가져옴
+		model.addAttribute("question", questionRepository.findById(id).get());
+		//Question question=questionRepository.findById(id).get();->위 문장과 같은 의미의 코드(대체 가능)
+		return "/qna/show";
 	}
 }
