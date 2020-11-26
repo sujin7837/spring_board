@@ -40,5 +40,11 @@ public class Question {
 		}
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
 	}
+
+	public void update(String title, String contents) {	//상세 페이지 수정시 새롭게 변경된 제목과 내용을 적용함
+		this.title=title;
+		this.contents=contents;
+		
+	}
 	
 }
