@@ -22,7 +22,7 @@ public class UserController {
 	
 	//UserRepository를 직접 만들지 않고, 어딘가에 저장되어 있다고 생각하고 그것을 가져다 씀
 	//UserRepository는 Spring Boot에서 알아서 생성해 줌
-	@Autowired
+	@Autowired	//해당 repository를 사용하고 싶으니 관련 인스턴스를 전달해달라고 요청하는 것
 	private UserRepository userRepository;
 	
 	@GetMapping("/loginForm")
