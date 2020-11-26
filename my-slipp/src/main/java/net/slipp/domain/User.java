@@ -84,6 +84,7 @@ public class User {
 		this.name=newUser.name;
 	}
 
+	//마우스 왼쪽->source->create hashCode() and equals()
 	@Override
 	public int hashCode() {
 		final int prime = 31;
