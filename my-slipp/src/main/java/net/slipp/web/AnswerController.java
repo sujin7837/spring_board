@@ -28,7 +28,7 @@ public class AnswerController {
 	@PostMapping("")
 	public String create(@PathVariable Long questionId, String contents, HttpSession session) {
 		if(!HttpSessionUtils.isLoginUser(session)) {	
-			return "/users/longinForm";	
+			return "/users/login";	
 		}
 		
 		User loginUser=HttpSessionUtils.getUserFromSession(session);

@@ -24,7 +24,7 @@ public class Question {
 	@JoinColumn(foreignKey=@ForeignKey(name="fk_question_writer"))	//foreignKey의 이름을 지정함
 	private User writer;	//Question에서 User를 바라볼 수 있게 관계를 맺음(String이 아니라 User 객체와 바로 관계를 맺도록 함)	private String writer;
 	private String title;
-	@Lob	//많은 양의 글자를 포함할 수 있게 해줌
+	@Lob	//데이터베이스에 더 많은 양의 글자를 포함할 수 있게 해줌
 	private String contents;
 	private LocalDateTime createDate;	//게시물이 게시된 날짜 표시
 	//LocalDateTime: Java8에서부터 지원

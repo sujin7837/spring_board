@@ -25,7 +25,7 @@ public class QuestionController {
 	@GetMapping("/form")	//3. qna 파일의 form.html로 이동하게 해줌
 	public String form(HttpSession session) {	//4. 인자로 세션을 받아옴
 		if(!HttpSessionUtils.isLoginUser(session)) {	//4. 로그인한 사용자에 한해서만 글쓰기가 가능하게 함
-			return "/users/longinForm";	//로그인하지 않은 경우에 로그인 페이지로 이동하도록 함
+			return "/user/login";	//로그인하지 않은 경우에 로그인 페이지로 이동하도록 함
 		}
 		
 		return "/qna/form";
@@ -34,7 +34,7 @@ public class QuestionController {
 	@PostMapping("")
 	public String create(String title, String contents, HttpSession session) {
 		if(!HttpSessionUtils.isLoginUser(session)) {	
-			return "/users/longinForm";	
+			return "/users/login";	
 		}
 		User sessionUser=HttpSessionUtils.getUserFromSession(session);	//6. 세션으로부터 user 정보를 얻어옴
 		Question newQuestion=new Question(sessionUser, title, contents);	//Question을 만듦
@@ -51,51 +51,56 @@ public class QuestionController {
 	
 	@GetMapping("/{id}/form")	// 상세 페이지를 수정할 때
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
+		try {
+			Question question = questionRepository.findById(id).get();
+			hasPermission(session, question);
+			model.addAttribute("question", question);
+			return "/qna/updateForm";
+		} catch(IllegalStateException e) {
+			model.addAttribute("errorMessage", e.getMessage());
+			return "/user/login";
+		}
+	}
+	
+	//Exception 처리를 해줌(중복 제거)
+	private boolean hasPermission(HttpSession session, Question question) {	//수정할 권한이 있는지 확인
 		//수정에 대한 보안 설정을 해주기 위해 세션에서 정보를 가져옴
 		if(!HttpSessionUtils.isLoginUser(session)) {	
-			return "/users/longinForm";	
+			throw new IllegalStateException("로그인이 필요합니다.");	
 		}
 		//로그인한 사용자가 글쓴이와 동일한지 확인하고, 같지 않으면 로그인 페이지로 이동
 		User loginUser=HttpSessionUtils.getUserFromSession(session);
-		Question question = questionRepository.findById(id).get();
 		if(!question.isSameWriter(loginUser)) {
-			return "/users/loginForm";
+			throw new IllegalStateException("자신이 쓴 글만 수정, 삭제가 가능합니다.");
 		}
 		
-		model.addAttribute("question", question);
-		return "/qna/updateForm";
+		return true;
 	}
-	
-	@PutMapping("/{id}")
-	public String update(@PathVariable Long id, String title, String contents, HttpSession session) {
-		if(!HttpSessionUtils.isLoginUser(session)) {	
-			return "/users/longinForm";	
-		}
 		
-		User loginUser=HttpSessionUtils.getUserFromSession(session);
-		Question question = questionRepository.findById(id).get();
-		if(!question.isSameWriter(loginUser)) {
-			return "/users/loginForm";
+	@PutMapping("/{id}")
+	public String update(@PathVariable Long id, String title, String contents, Model model, HttpSession session) {
+		try {
+			Question question = questionRepository.findById(id).get();
+			hasPermission(session, question);
+			question.update(title, contents);	//수정한 내용이 적용됨
+			questionRepository.save(question);	//수정한 내용을 저장함
+			return String.format("redirect:/questions/%d", id);
+		} catch(IllegalStateException e) {
+			model.addAttribute("errorMessage", e.getMessage());
+			return "/user/login";
 		}
-				
-		question.update(title, contents);	//수정한 내용이 적용됨
-		questionRepository.save(question);	//수정한 내용을 저장함
-		return String.format("redirect:/questions/%d", id);
 	}
 	
 	@DeleteMapping("/{id}")
-	public String delete(@PathVariable Long id, HttpSession session) {
-		if(!HttpSessionUtils.isLoginUser(session)) {	
-			return "/users/longinForm";	
+	public String delete(@PathVariable Long id, Model model, HttpSession session) {
+		try {
+			Question question = questionRepository.findById(id).get();
+			hasPermission(session, question);
+			questionRepository.deleteById(id);	//delete(): entity를 인자로 받아서 삭제함, deleteById(): id를 받아서 그 개체를 삭제함
+			return "redirect:/";
+		} catch(IllegalStateException e) {
+			model.addAttribute("errorMessage", e.getMessage());
+			return "/user/login";
 		}
-		
-		User loginUser=HttpSessionUtils.getUserFromSession(session);
-		Question question = questionRepository.findById(id).get();
-		if(!question.isSameWriter(loginUser)) {
-			return "/users/loginForm";
-		}
-		
-		questionRepository.deleteById(id);	//delete(): entity를 인자로 받아서 삭제함, deleteById(): id를 받아서 그 개체를 삭제함
-		return "redirect:/";
 	}
 }
