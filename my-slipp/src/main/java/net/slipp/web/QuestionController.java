@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.slipp.domain.Question;
 import net.slipp.domain.QuestionRepository;
+import net.slipp.domain.Result;
 import net.slipp.domain.User;
 
 @Controller	//1. 이 클래스는 Controller 역할을 하는 클래스라는 것을 스프링에 알려줌
@@ -51,56 +52,70 @@ public class QuestionController {
 	
 	@GetMapping("/{id}/form")	// 상세 페이지를 수정할 때
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-		try {
-			Question question = questionRepository.findById(id).get();
-			hasPermission(session, question);
-			model.addAttribute("question", question);
-			return "/qna/updateForm";
-		} catch(IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
+		Question question=questionRepository.findById(id).get();
+		Result result=valid(session, question);
+		if(!result.isValid()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
 			return "/user/login";
 		}
+		
+		model.addAttribute("question", question);
+		return "/qna/updateForm";
 	}
 	
-	//Exception 처리를 해줌(중복 제거)
-	private boolean hasPermission(HttpSession session, Question question) {	//수정할 권한이 있는지 확인
+	private Result valid(HttpSession session, Question question) {	//수정할 권한이 있는지 확인
 		//수정에 대한 보안 설정을 해주기 위해 세션에서 정보를 가져옴
 		if(!HttpSessionUtils.isLoginUser(session)) {	
-			throw new IllegalStateException("로그인이 필요합니다.");	
+			return Result.fail("로그인이 필요합니다.");	
 		}
 		//로그인한 사용자가 글쓴이와 동일한지 확인하고, 같지 않으면 로그인 페이지로 이동
 		User loginUser=HttpSessionUtils.getUserFromSession(session);
 		if(!question.isSameWriter(loginUser)) {
-			throw new IllegalStateException("자신이 쓴 글만 수정, 삭제가 가능합니다.");
+			return Result.fail("자신이 쓴 글만 수정, 삭제가 가능합니다.");
 		}
 		
-		return true;
+		return Result.ok();
 	}
+	
+//	//Exception 처리를 해줌(중복 제거)
+//	private boolean hasPermission(HttpSession session, Question question) {	//수정할 권한이 있는지 확인
+//		//수정에 대한 보안 설정을 해주기 위해 세션에서 정보를 가져옴
+//		if(!HttpSessionUtils.isLoginUser(session)) {	
+//			throw new IllegalStateException("로그인이 필요합니다.");	
+//		}
+//		//로그인한 사용자가 글쓴이와 동일한지 확인하고, 같지 않으면 로그인 페이지로 이동
+//		User loginUser=HttpSessionUtils.getUserFromSession(session);
+//		if(!question.isSameWriter(loginUser)) {
+//			throw new IllegalStateException("자신이 쓴 글만 수정, 삭제가 가능합니다.");
+//		}
+//		
+//		return true;
+//	}
 		
 	@PutMapping("/{id}")
 	public String update(@PathVariable Long id, String title, String contents, Model model, HttpSession session) {
-		try {
-			Question question = questionRepository.findById(id).get();
-			hasPermission(session, question);
-			question.update(title, contents);	//수정한 내용이 적용됨
-			questionRepository.save(question);	//수정한 내용을 저장함
-			return String.format("redirect:/questions/%d", id);
-		} catch(IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
+		Question question=questionRepository.findById(id).get();
+		Result result=valid(session, question);
+		if(!result.isValid()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
 			return "/user/login";
 		}
+		
+		question.update(title, contents);	//수정한 내용이 적용됨
+		questionRepository.save(question);	//수정한 내용을 저장함
+		return String.format("redirect:/questions/%d", id);
 	}
 	
 	@DeleteMapping("/{id}")
 	public String delete(@PathVariable Long id, Model model, HttpSession session) {
-		try {
-			Question question = questionRepository.findById(id).get();
-			hasPermission(session, question);
-			questionRepository.deleteById(id);	//delete(): entity를 인자로 받아서 삭제함, deleteById(): id를 받아서 그 개체를 삭제함
-			return "redirect:/";
-		} catch(IllegalStateException e) {
-			model.addAttribute("errorMessage", e.getMessage());
+		Question question=questionRepository.findById(id).get();
+		Result result=valid(session, question);
+		if(!result.isValid()) {
+			model.addAttribute("errorMessage", result.getErrorMessage());
 			return "/user/login";
 		}
+		
+		questionRepository.deleteById(id);	//delete(): entity를 인자로 받아서 삭제함, deleteById(): id를 받아서 그 개체를 삭제함
+		return "redirect:/";
 	}
 }
