@@ -6,6 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity	//Database와 매핑하는 어노테이션
 public class User {
 	/*1. @Id
@@ -17,16 +20,23 @@ public class User {
 	 * Long이라는 새로운 값이 Primary Key를 관리할 수 있도록 추가해줌
 	 * */
 	@Id	//Database의 Primary Key 지정
-	@GeneratedValue(strategy=GenerationType.IDENTITY)	//import.sql 파일에서 ID 값을 지정해주지 않으면 오류가 발생하는데, ID값을 자동 생성하도록 해주는 코
+	@GeneratedValue(strategy=GenerationType.IDENTITY)	//import.sql 파일에서 ID 값을 지정해주지 않으면 오류가 발생하는데, ID값을 자동 생성하도록 해주는 코드
+	@JsonProperty	//getter 메소드를 이용할수도 있으나 대신 JsonProperty 어노테이션을 이용함
 	private Long id;	//값이 자동으로 1씩 증가됨
 	
 	@Column(nullable=false, length=20, unique=true)	
 	//userId 값이 널 값이 될 수 없도록 지정 
 	//unique=true : userId는 유일해야 한다(똑같은 값이 들어올 수 없다) 
+	@JsonProperty
 	private String userId;
 	
-	private String password;
+	@JsonIgnore	//명시적으로 json을 적용하지 않겠다고 표시해줌(없어도 됨)
+	private String password;	//password는 json으로 받아오는 게 보안상 안전하지 않으므로 JsonProperty 어노테이션을 추가하지 않음
+	
+	@JsonProperty
 	private String name;
+	
+	@JsonProperty
 	private String email;
 	
 	public Long getId() {

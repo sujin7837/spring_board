@@ -26,7 +26,7 @@ public class UserController {
 	private UserRepository userRepository;
 
 	@GetMapping("/login")
-	public String loginFrom() {
+	public String loginForm() {
 		return "/user/login";
 	}
 
@@ -37,7 +37,7 @@ public class UserController {
 		// 기본키는 Id이지만 userId를 기반으로 조회할 수 있음->UserRepository.java에 코드 추가
 		if (user == null) {
 			System.out.println("Login Success!"); // 정상적으로 동작하는지 확인하기 위해 콘솔에 문구를 찍어보기 위한 코드
-			return "redirect:/users/loginForm";
+			return "redirect:/users/login";
 		}
 		if (!user.matchPassword(password)) {
 			// user가 가지고 있는 패스워드 정보를 계속 get으로 꺼내오는 것이 아니라, User에게 메시지를 보내서 비밀번호가 일치하는지 확인함
@@ -107,7 +107,7 @@ public class UserController {
 		// 해당 부분 중복 제거
 //		Object tempUser=session.getAttribute("sessionedUser");
 //		if(tempUser==null) {	
-//			return "redirect:/users/loginForm";
+//			return "redirect:/users/login";
 //		}	
 		if (HttpSessionUtils.isLoginUser(session)) {
 			return "redirect:/users/login";
