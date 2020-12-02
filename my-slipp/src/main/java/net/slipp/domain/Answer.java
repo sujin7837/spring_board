@@ -50,6 +50,11 @@ public class Answer {
 		}
 		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
 	}
+	
+	public boolean isSameWriter(User loginUser) {
+		// TODO Auto-generated method stub
+		return loginUser.equals(this.writer);
+	}
 
 	@Override
 	public int hashCode() {
@@ -81,6 +86,7 @@ public class Answer {
 		return "Answer [id=" + id + ", writer=" + writer + ", contents=" + contents + ", createDate=" + createDate
 				+ "]";
 	}
+
 	
 	
 }
