@@ -30,10 +30,13 @@ public class Question {
 	
 	@JsonProperty
 	private String title;
-	@Lob	//데이터베이스에 더 많은 양의 글자를 포함할 수 있게 해줌
 	
+	@Lob	//데이터베이스에 더 많은 양의 글자를 포함할 수 있게 해줌
 	@JsonProperty
 	private String contents;
+	
+	@JsonProperty
+	private Integer countOfAnswer=
 	
 	private LocalDateTime createDate;	//게시물이 게시된 날짜 표시
 	//LocalDateTime: Java8에서부터 지원
