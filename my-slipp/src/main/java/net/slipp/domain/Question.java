@@ -17,12 +17,7 @@ import javax.persistence.OrderBy;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity	//질문 정보를 데이터베이스에 추가함(글쓴이, 제목, 내용)
-public class Question {
-	@Id
-	@GeneratedValue
-	@JsonProperty
-	private Long id;
-	
+public class Question extends AbstractEntity{
 	@ManyToOne	//question과 user의 관계가 다 대 일
 	@JoinColumn(foreignKey=@ForeignKey(name="fk_question_writer"))	//foreignKey의 이름을 지정함
 	@JsonProperty
@@ -38,8 +33,7 @@ public class Question {
 	@JsonProperty
 	private Integer countOfAnswer=0;
 	
-	private LocalDateTime createDate;	//게시물이 게시된 날짜 표시
-	//LocalDateTime: Java8에서부터 지원
+	
 	
 	@OneToMany(mappedBy="question")	//question이 answer를 가지고 있도록 함
 	//mappedBy="ManyToOne에서의 필드의 이름"
@@ -54,14 +48,6 @@ public class Question {
 		this.writer = writer;
 		this.title = title;
 		this.contents = contents;
-		this.createDate=LocalDateTime.now();
-	}
-	
-	public String getFormattedCreateDate() {
-		if(createDate==null) {
-			return "";
-		}
-		return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
 	}
 
 	public void update(String title, String contents) {	//상세 페이지 수정시 새롭게 변경된 제목과 내용을 적용함
@@ -75,38 +61,4 @@ public class Question {
 		return this.writer.equals(loginUser);
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((writer == null) ? 0 : writer.hashCode());
-		return result;
-	}
-	
-	public void addAnswer() {
-		this.countOfAnswer+=1;
-	}
-	
-	public void deleteAnswer() {
-		this.countOfAnswer-=1;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Question other = (Question) obj;
-		if (writer == null) {
-			if (other.writer != null)
-				return false;
-		} else if (!writer.equals(other.writer))
-			return false;
-		return true;
-	}
-	
-	
 }

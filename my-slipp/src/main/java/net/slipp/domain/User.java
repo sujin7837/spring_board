@@ -10,20 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity	//Database와 매핑하는 어노테이션
-public class User {
-	/*1. @Id
-	 * 	 private String userId;
-	 * userId를 Primary Key로 사용
-	 *2. @Id
-	 *	 @Generated
-	 *	 private Long id;
-	 * Long이라는 새로운 값이 Primary Key를 관리할 수 있도록 추가해줌
-	 * */
-	@Id	//Database의 Primary Key 지정
-	@GeneratedValue(strategy=GenerationType.IDENTITY)	//import.sql 파일에서 ID 값을 지정해주지 않으면 오류가 발생하는데, ID값을 자동 생성하도록 해주는 코드
-	@JsonProperty	//getter 메소드를 이용할수도 있으나 대신 JsonProperty 어노테이션을 이용함
-	private Long id;	//값이 자동으로 1씩 증가됨
-	
+public class User extends AbstractEntity{
 	@Column(nullable=false, length=20, unique=true)	
 	//userId 값이 널 값이 될 수 없도록 지정 
 	//unique=true : userId는 유일해야 한다(똑같은 값이 들어올 수 없다) 
@@ -38,17 +25,6 @@ public class User {
 	
 	@JsonProperty
 	private String email;
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public boolean matchId(Long newId) {
-		if(newId==null) {
-			return false;
-		}
-		return newId.equals(id);
-	}
 
 	public void setUserId(String userId) {
 		this.userId = userId;
@@ -82,44 +58,24 @@ public class User {
 		this.email = email;
 	}
 
-	@Override
-	public String toString() {
-		return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
-	}
-
 	public void update(User newUser) {
 		// TODO Auto-generated method stub
 		this.password=newUser.password;
 		this.email=newUser.email;
 		this.name=newUser.name;
 	}
-
-	//마우스 왼쪽->source->create hashCode() and equals()
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
-
 	
+	public boolean matchId(Long newId) {
+		if(newId==null) {
+			return false;
+		}
+		return newId.equals(getId());
+	}
+	
+	@Override
+	public String toString() {
+		return "User [" + super.toString() + ", userId=" + userId +  ", password=" + password + ", name=" + name + ", email=" + email + "]";
+	}	//id 대신 AbstractEntity에 toString 메소드를 추가하여 그것을 이용함
+
 	
 }
