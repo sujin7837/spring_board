@@ -36,7 +36,7 @@ public class Question {
 	private String contents;
 	
 	@JsonProperty
-	private Integer countOfAnswer=
+	private Integer countOfAnswer=0;
 	
 	private LocalDateTime createDate;	//게시물이 게시된 날짜 표시
 	//LocalDateTime: Java8에서부터 지원
@@ -74,5 +74,39 @@ public class Question {
 		// TODO Auto-generated method stub
 		return this.writer.equals(loginUser);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((writer == null) ? 0 : writer.hashCode());
+		return result;
+	}
+	
+	public void addAnswer() {
+		this.countOfAnswer+=1;
+	}
+	
+	public void deleteAnswer() {
+		this.countOfAnswer-=1;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Question other = (Question) obj;
+		if (writer == null) {
+			if (other.writer != null)
+				return false;
+		} else if (!writer.equals(other.writer))
+			return false;
+		return true;
+	}
+	
 	
 }

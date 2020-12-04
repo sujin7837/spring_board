@@ -37,6 +37,7 @@ public class ApiAnswerController {
 		User loginUser=HttpSessionUtils.getUserFromSession(session);
 		Question question=questionRepository.findById(questionId).get();
 		Answer answer=new Answer(loginUser, question, contents);	//answer 객체를 생성함
+		question.addAnswer();
 		return answerRepository.save(answer);	//답변을 저장
 		//answer를 새로 만들었을 때, save의 return 값은 그대로 answer가 됨 
 //		return String.format("redirect:/questions/%d", questionId);	//%d: 숫자값
@@ -55,6 +56,9 @@ public class ApiAnswerController {
 		}
 		
 		answerRepository.deleteById(id);
+		
+		Question question=questionRepository.findById(questionId).get();
+		question.deleteAnswer();
 		return Result.ok();
 	}
 }
