@@ -59,6 +59,7 @@ public class ApiAnswerController {
 		
 		Question question=questionRepository.findById(questionId).get();
 		question.deleteAnswer();
+		questionRepository.save(question);
 		return Result.ok();
 	}
 }
