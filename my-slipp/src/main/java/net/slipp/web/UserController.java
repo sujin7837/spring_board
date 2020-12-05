@@ -84,7 +84,7 @@ public class UserController {
 		// id를 받아와야 하므로 @PathVariable 사용
 		// session을 통해서 사용자가 로그인을 했는지 여부를 알아옴
 		Object tempUser = session.getAttribute("sessionedUser");
-		if (HttpSessionUtils.isLoginUser(session)) { // 로그인을 하지 않으면 로그인 페이지로 이동하도록 함
+		if (!HttpSessionUtils.isLoginUser(session)) { // 로그인을 하지 않으면 로그인 페이지로 이동하도록 함
 			return "redirect:/users/login";
 		}
 //자신의 정보만 수정할 수 있도록 하는 방법 1	

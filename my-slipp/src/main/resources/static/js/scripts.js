@@ -32,6 +32,7 @@
 		$("textarea[name=contents]").val("");
 	}
 	
+	$(document).on('click', '.link-delete-article', deleteAnswer);	//답변이 바로 삭제가 안 될 때 추가로 넣어준 코드
 	$("a.link-delete-article").click(deleteAnswer);
 	
 	function deleteAnswer(e) {

@@ -35,7 +35,7 @@ public class QuestionController {
 	@PostMapping("")
 	public String create(String title, String contents, HttpSession session) {
 		if(!HttpSessionUtils.isLoginUser(session)) {	
-			return "/users/login";	
+			return "/user/login";	
 		}
 		User sessionUser=HttpSessionUtils.getUserFromSession(session);	//6. 세션으로부터 user 정보를 얻어옴
 		Question newQuestion=new Question(sessionUser, title, contents);	//Question을 만듦

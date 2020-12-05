@@ -61,4 +61,14 @@ public class Question extends AbstractEntity{
 		return this.writer.equals(loginUser);
 	}
 
+	public void addAnswer() {
+		// TODO Auto-generated method stub
+		this.countOfAnswer+=1;
+	}
+
+	public void deleteAnswer() {
+		// TODO Auto-generated method stub
+		this.countOfAnswer-=1;
+	}
+
 }
